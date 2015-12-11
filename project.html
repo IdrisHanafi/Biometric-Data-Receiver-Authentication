@@ -1,0 +1,83 @@
+<html>
+  <head>
+  
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Custom styles for this template -->
+    <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
+  
+  
+    <title>Login</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">  </script>	 
+	 <script>
+		var times = [];    
+		var reportString = "";
+		// call this to get the string
+		function reportTimes() {
+			for(var i = 0; i < times.length - 1; ++i) {
+				 reportString += (times[i+1].timestamp - times[i].timestamp) + " ";			// a password abc is represented with 1: b-a 2: c-b
+			}
+			return reportString; // add this somewhere or alert it
+		}
+	
+		$(document).ready(function(){
+		// add an object with keycode and timestamp
+		$('input[type=password]').keyup(function(evt) {
+			times.push({"timestamp":evt.timeStamp,
+						"keycode":evt.which})
+		});
+	  
+        var user,pass;
+        $("#submit").click(function(){
+		  login();
+        });
+		
+		$("input").keypress(function(event) {
+			if (event.which == 13) {
+				event.preventDefault();
+				login();
+				//$("#submit").submit();
+			}
+		});
+		
+		function login(){
+		  $(document.body).append(reportTimes());
+		  reportString = reportString.replace(/\s*$/,"");
+          user=$("#user").val();
+          pass=$("#password").val();
+          $.post("http://localhost:3000/login",{username:user, password:pass, keystroke:reportString}, function(data){
+			if(data != 'no'){
+				  window.location.href = "http://localhost:3000/home";
+			} else {
+					$(document.body).append("Login Fail");
+			}
+          });
+		}
+      });
+    </script>
+  </head>
+	<center>
+  <body>
+	  <div class="container">
+		<h1>Login</h1>
+		<label>Username:</label><input type="TEXT" id="user" placeholder="Username"><br>
+		<label>Password:</label><input type="password" id="password"  placeholder="Password"><br>
+		<input class="btn btn-lg btn-primary" type="button" id="submit" value="Log In">
+
+    </div>
+  </body>
+	</center>
+</html>
+
+<center>
+<a href="signup">
+Don't Have an Account? Sign Up
+</a>
+</center>
+
+
+<!-- https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms/Sending_and_retrieving_form_data -->
+<!-- check the link above to send the time data to the server-->
+<!-- check this link: https://codeforgeek.com/2014/09/handle-get-post-request-express-4/ -->

@@ -1,0 +1,78 @@
+<html>
+  <head>
+  
+	<!-- Bootstrap core CSS -->
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Custom styles for this template -->
+    <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
+  
+  
+    <title>Sign Up</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">  </script>
+    <script>
+		var timesPassword = [];
+		var timesConfirmPassword = [];
+		var reportStringPassword = "";
+		var reportStringConfirmPassword = "";
+		var reportString = "";
+		// call this to get the string
+		function reportTimes() {
+			for(var i = 0; i < timesPassword.length - 1; ++i) {
+				reportStringPassword += (timesPassword[i+1].timestamp - timesPassword[i].timestamp) + " ";
+				reportStringConfirmPassword += (timesConfirmPassword[i+1].timestamp - timesConfirmPassword[i].timestamp) + " ";
+				reportString += ((timesPassword[i+1].timestamp - timesPassword[i].timestamp) + (timesConfirmPassword[i+1].timestamp - timesConfirmPassword[i].timestamp))/2 + " ";			// a password abc is represented with 1: b-a 2: c-b
+			}
+			return reportString; // add this somewhere or alert it
+		}
+	
+		$(document).ready(function(){
+			// add an object with keycode and timestamp
+			//Password times
+			$("#password").keyup(function(evt) {
+				timesPassword.push({"timestamp":evt.timeStamp,
+							"keycode":evt.which})
+			});
+			//Confirm Password timeStamp
+			$("#confirmPassword").keyup(function(evt) {
+				timesConfirmPassword.push({"timestamp":evt.timeStamp,
+							"keycode":evt.which})
+			});
+		  
+			var user,pass;
+			$("#submit").click(function(){
+				if(password.value==confirmPassword.value){
+				  $(document.body).append(reportTimes());
+				  $(document.body).append("Sign Up Success!");
+				  reportString = reportString.replace(/\s*$/,"");
+				  
+				  user=$("#user").val();
+				  pass=$("#password").val();
+				  $.post("http://localhost:3000/create",{username:user, password:pass, keystroke:reportString}, function(data){
+				  
+				  });
+				  
+				} else {
+					$(document.body).append("Both Passwords do not Match");
+				}
+			});
+		});
+    </script>
+  </head>
+  <center>
+  <body>
+  <div class="container">
+    <h1>Sign Up</h1>
+    <label>Username:</label><input type="TEXT" id="user"><br>
+    <label>Password:</label><input type="password" id="password"><br>
+	<label>Confirm Password One:</label><input type="password" id="confirmPassword"><br>
+    <input class="btn btn-lg btn-primary" type="button" id="submit" value="Sign Up">
+	</div>
+  </body>
+  </center>
+</html>
+
+
+<!-- https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms/Sending_and_retrieving_form_data -->
+<!-- check the link above to send the time data to the server-->
+<!-- check this link: https://codeforgeek.com/2014/09/handle-get-post-request-express-4/ -->
